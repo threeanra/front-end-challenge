@@ -1,8 +1,8 @@
-import React, { useEffect } from "react";
+import React from "react";
 import type { FormProps } from "antd";
 import { Button, Form, Input, message, Select } from "antd";
+import { addUser, editUser, getUserById } from "@/services/user";
 import { useRouter } from "next/router";
-import { editUser, getUserById } from "@/services/user";
 import { ArrowLeftOutlined } from "@ant-design/icons";
 
 type FieldType = {
@@ -20,22 +20,13 @@ const onFinishFailed: FormProps<FieldType>["onFinishFailed"] = (errorInfo) => {
 
 export default function Page() {
   const router = useRouter();
-  const { slug } = router.query;
   const [form] = Form.useForm();
 
-  const {
-    data: user,
-    isLoading: loadingGetUser,
-    isError: isErrorGetUser,
-  } = getUserById({
-    id: slug as string,
-  });
-
-  if (isErrorGetUser) console.error("Error fetching users:", isErrorGetUser);
-
-  const { mutate: updateUser, isPending: loadingUpdateUser } = editUser({
-    onSuccess: () => {
-      message.success("Updated User Successfully");
+  const { mutate: createUser, isPending } = addUser({
+    onSuccess: (data: any) => {
+      message.success("Added User Successfully");
+      sessionStorage.setItem("user", JSON.stringify(data));
+      window.dispatchEvent(new Event("userUpdated"));
       router.back();
     },
     onError: (error: any) => {
@@ -43,26 +34,12 @@ export default function Page() {
     },
   });
 
-  useEffect(() => {
-    if (user) {
-      form.setFieldsValue({
-        name: user.name,
-        email: user.email,
-        gender: user.gender,
-        status: user.status,
-      });
-    }
-  }, [user, form]);
-
-  const handleUpdateUser = () => {
-    updateUser({
-      id: Number(slug),
-      data: form.getFieldsValue(),
-    });
+  const handleCreateUser = (values: FieldType) => {
+    createUser({ data: values });
   };
 
   return (
-    <main className="flex mt-10 md:mt-16 md:mt-22 pb-10 flex-col px-5 md:px-[400px] 2xl:px-[600px] justify-center">
+    <main className="flex flex-col px-3 md:px-[400px] 2xl:px-[600px] justify-center mt-10 md:mt-16 md:mt-22 pb-10">
       <Button
         icon={<ArrowLeftOutlined />}
         onClick={router.back}
@@ -71,30 +48,31 @@ export default function Page() {
         Go Back
       </Button>
       <div className="p-10 border rounded-md border-gray-300 w-full">
-        <h1 className="mb-5 text-xl font-bold">Edit User</h1>
+        <h1 className="mb-5 text-xl font-bold">Add User</h1>
         <Form
           form={form}
           name="basic"
           layout="vertical"
+          onFinish={handleCreateUser}
           onFinishFailed={onFinishFailed}
           autoComplete="off"
         >
-          <Form.Item name="name" label="Name">
+          <Form.Item name="name" label="Name" rules={[{ required: true }]}>
             <Input />
           </Form.Item>
 
-          <Form.Item name="email" label="Email">
+          <Form.Item name="email" label="Email" rules={[{ required: true }]}>
             <Input />
           </Form.Item>
 
-          <Form.Item name="gender" label="Gender">
+          <Form.Item name="gender" label="Gender" rules={[{ required: true }]}>
             <Select>
               <Option value="male">Male</Option>
               <Option value="female">Female</Option>
             </Select>
           </Form.Item>
 
-          <Form.Item name="status" label="Status">
+          <Form.Item name="status" label="Status" rules={[{ required: true }]}>
             <Select>
               <Option value="active">Active</Option>
               <Option value="inactive">Inactive</Option>
@@ -102,12 +80,7 @@ export default function Page() {
           </Form.Item>
 
           <Form.Item label={null}>
-            <Button
-              type="primary"
-              htmlType="submit"
-              onClick={handleUpdateUser}
-              loading={loadingUpdateUser}
-            >
+            <Button type="primary" htmlType="submit" loading={isPending}>
               Submit
             </Button>
           </Form.Item>

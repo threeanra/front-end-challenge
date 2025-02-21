@@ -1,7 +1,54 @@
-import React from 'react'
+import { UserAddOutlined } from "@ant-design/icons";
+import { Button } from "antd";
+import Link from "next/link";
+import { useRouter } from "next/router";
+import React, { useEffect, useState } from "react";
 
 export default function Navbar() {
+  const router = useRouter();
+  const [user, setUser] = useState<{ name: string } | null>(null);
+
+  const getUser = () => {
+    const storedUser = sessionStorage.getItem("user");
+    setUser(storedUser ? JSON.parse(storedUser) : null);
+  };
+
+  useEffect(() => {
+    getUser();
+
+    const handleUserUpdate = () => getUser();
+    window.addEventListener("userUpdated", handleUserUpdate);
+
+    return () => {
+      window.removeEventListener("userUpdated", handleUserUpdate);
+    };
+  }, []);
+
   return (
-    <div>Navbar</div>
-  )
+    <nav className="bg-background">
+      <div className="flex items-center justify-between py-6 border-b-[1px] px-3 md:px-[250px] 2xl:px-[450px]">
+        <Link href="/">
+          <span className="text-2xl font-bold">Blog Verse</span>
+        </Link>
+
+        <div className="flex gap-4">
+          {user ? (
+            <span className="text-lg ">
+              Halo, <span className="font-bold">{user.name}</span>
+            </span>
+          ) : (
+            <Button
+              onClick={() => {
+                router.push("/user/adduser");
+              }}
+              type="primary"
+              icon={<UserAddOutlined />}
+            >
+              Register
+            </Button>
+          )}
+        </div>
+      </div>
+    </nav>
+  );
 }

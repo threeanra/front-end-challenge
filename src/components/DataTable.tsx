@@ -1,8 +1,13 @@
 import React, { useState } from "react";
-import { Button, Space, Table, Tag } from "antd";
+import { message, Button, Modal, Space, Table, Tag } from "antd";
 import type { TableProps } from "antd";
-import { PlusOutlined, EditTwoTone, DeleteTwoTone } from "@ant-design/icons";
-import { getUsers } from "@/services/user";
+import {
+  PlusOutlined,
+  EditTwoTone,
+  DeleteTwoTone,
+  ArrowLeftOutlined,
+} from "@ant-design/icons";
+import { deleteUser, getUsers } from "@/services/user";
 import { useRouter } from "next/router";
 
 interface DataType {
@@ -18,12 +23,26 @@ export default function DataTable() {
   const router = useRouter();
   const [page, setPage] = useState(1);
   const perPage = 10;
+  const [openModal, setOpenModal] = useState<boolean>(false);
+  const [selectedId, setSelectedId] = useState<number>(0);
 
-  const { data: users, isLoading } = getUsers({
+  const {
+    data: users,
+    isLoading,
+    isError,
+  } = getUsers({
     page,
     perPage,
-    onError: () => {
-      console.error("Error fetching users");
+  });
+
+  if (isError) console.error("Error fetching users : ", isError);
+
+  const { mutate: delUser, isPending: loadingDeleteUser } = deleteUser({
+    onSuccess: () => {
+      message.success("Deleted User Successfully");
+    },
+    onError: (error: any) => {
+      console.error("Failed to delete user:", error);
     },
   });
 
@@ -70,7 +89,10 @@ export default function DataTable() {
           <div className="cursor-pointer" onClick={() => handleUpdate(record)}>
             <EditTwoTone twoToneColor="#0000FF" />
           </div>
-          <div className="cursor-pointer">
+          <div
+            className="cursor-pointer"
+            onClick={() => showDeleteModal(record)}
+          >
             <DeleteTwoTone twoToneColor="#FF0000" />
           </div>
         </Space>
@@ -78,29 +100,50 @@ export default function DataTable() {
     },
   ];
 
-  const handleUpdate = (user: any) => {
-    router.push(`/user/${user.id}`);
+  const handleUpdate = (record: any) => {
+    router.push(`/user/${record.id}`);
+  };
+
+  const showDeleteModal = (record: any) => {
+    setSelectedId(record.id);
+    setOpenModal(true);
+  };
+
+  const handleDeleteUser = (id: number) => {
+    delUser({
+      id: id,
+    });
+    setOpenModal(false);
   };
 
   const data: DataType[] = users?.map((user: DataType) => ({
-    key: user.id,
-    id: user.id,
-    name: user.name,
-    email: user.email,
-    gender: user.gender.charAt(0).toUpperCase() + user.gender.slice(1),
-    status: user.status,
+    key: user?.id,
+    id: user?.id,
+    name: user?.name,
+    email: user?.email,
+    gender: user?.gender?.charAt(0).toUpperCase() + user?.gender?.slice(1),
+    status: user?.status,
   }));
 
   return (
     <div className="w-full">
-      <Button
-        className="mb-4"
-        type="primary"
-        icon={<PlusOutlined />}
-        onClick={() => router.push("/user")}
-      >
-        Add New User
-      </Button>
+      <div className="mb-4 flex gap-3">
+        <Button
+          type="default"
+          icon={<ArrowLeftOutlined />}
+          onClick={() => router.back()}
+        >
+          Go Back
+        </Button>
+        <Button
+          type="primary"
+          icon={<PlusOutlined />}
+          onClick={() => router.push("/user/adduser")}
+        >
+          Add New User
+        </Button>
+      </div>
+
       <Table<DataType>
         columns={columns}
         dataSource={data}
@@ -114,6 +157,16 @@ export default function DataTable() {
         }}
         scroll={{ x: "max-content" }}
       />
+      <Modal
+        title="Hapus User"
+        centered
+        open={openModal}
+        onOk={() => selectedId !== null && handleDeleteUser(selectedId)}
+        onCancel={() => setOpenModal(false)}
+        okButtonProps={{ danger: true }}
+      >
+        <p>Are you sure you want to delete this user?</p>
+      </Modal>
     </div>
   );
 }

@@ -5,57 +5,62 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 export const getUsers = ({
   page,
   perPage,
-  onError,
 }: {
   page: number;
   perPage: number;
-  onError: (error: Error) => void;
 }) => {
-  const { error, ...result } = useQuery({
+  return useQuery({
     queryFn: async () => {
       const response = await axiosInstance.get(`/public/v2/users`, {
         params: { page, per_page: perPage },
       });
       return response.data;
     },
-    queryKey: ["get_user", page, perPage],
+    queryKey: ["get_users", page, perPage],
+    throwOnError: true,
   });
-
-  if (error) {
-    onError(error);
-  }
-
-  return result;
 };
 
-export const getUserById = ({
-  id,
-  onError,
-}: {
-  id: string;
-  onError: (error: Error) => void;
-}) => {
-  const { error, ...result } = useQuery({
+export const getUserById = ({ id }: { id: string }) => {
+  return useQuery({
     queryFn: async () => {
       const response = await axiosInstance.get(`/public/v2/users/${id}`);
       return response.data;
     },
     queryKey: ["get_user_by_id", id],
   });
+};
 
-  if (error) {
-    onError(error);
-  }
+export const addUser = ({
+  onSuccess,
+  onError,
+}: {
+  onSuccess: (data: any) => void;
+  onError: (error: Error) => void;
+}) => {
+  const queryClient = useQueryClient();
 
-  return result;
+  return useMutation({
+    mutationFn: async ({ data }: { data: any }) => {
+      const response = await axiosInstance.post(`/public/v2/users`, data);
+      return response.data;
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ["get_users"] });
+      if (onSuccess) onSuccess(data);
+    },
+    onError: (error) => {
+      if (onError) onError(error);
+    },
+  });
 };
 
 export const editUser = ({
   onSuccess,
   onError,
 }: {
-  onSuccess?: () => void;
-  onError?: (error: Error) => void;
+  onSuccess: () => void;
+  onError: (error: Error) => void;
 }) => {
   const queryClient = useQueryClient();
 
@@ -65,7 +70,30 @@ export const editUser = ({
       return response.data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["get_user"] });
+      queryClient.invalidateQueries({ queryKey: ["get_users"] });
+      if (onSuccess) onSuccess();
+    },
+    onError: (error) => {
+      if (onError) onError(error);
+    },
+  });
+};
+
+export const deleteUser = ({
+  onSuccess,
+  onError,
+}: {
+  onSuccess: () => void;
+  onError: (error: Error) => void;
+}) => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ id }: { id: number }) => {
+      await axiosInstance.delete(`/public/v2/users/${id}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["get_users"] }); // Refresh data user yang dihapus
       if (onSuccess) onSuccess();
     },
     onError: (error) => {
