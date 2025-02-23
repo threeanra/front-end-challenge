@@ -28,7 +28,12 @@ export default function Navbar() {
     <nav className="bg-background">
       <div className="flex items-center justify-between py-6 border-b-[1px] px-3 md:px-[250px] 2xl:px-[450px]">
         <Link href="/">
-          <span className="text-2xl font-bold">Blog Verse</span>
+          <span className="text-2xl font-bold">
+            Blog{" "}
+            <span className="bg-gradient-to-r from-blue-500 to-purple-500 text-transparent bg-clip-text">
+              Verse
+            </span>
+          </span>
         </Link>
 
         <div className="flex gap-4">

@@ -31,7 +31,7 @@ export default function Page() {
     id: slug as string,
   });
 
-  if (isErrorGetUser) console.error("Error fetching users:", isErrorGetUser);
+  // if (isErrorGetUser) console.error("Error fetching users:", isErrorGetUser);
 
   const { mutate: updateUser, isPending: loadingUpdateUser } = editUser({
     onSuccess: () => {

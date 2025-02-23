@@ -5,6 +5,7 @@ import { useRouter } from "next/router";
 import CardPost, { CardPostProps } from "../components/CardPost";
 import { useState } from "react";
 import { getPosts } from "@/services/post";
+import CardPostSkeleton from "@/components/CardPostSkeleton";
 
 export default function Home() {
   const router = useRouter();
@@ -19,19 +20,23 @@ export default function Home() {
     perPage,
   });
 
-  console.log(posts);
-
-  if (isError) console.error("Error fetching posts : ", isError);
+  // if (isError) console.error("Error fetching posts : ", isError);
 
   return (
     <Container>
       <span className="font-bold text-6xl">
-        Blog <span>Verse</span>
+        Blog{" "}
+        <span className="bg-gradient-to-r from-blue-500 to-purple-500 text-transparent bg-clip-text">
+          Verse
+        </span>
       </span>
+
+      <span>Lorem ipsum dolor sit amet</span>
+
       <div className="flex gap-3">
         <Button
           onClick={() => {
-            router.push("/user");
+            router.push("/post");
           }}
           icon={<PlusOutlined />}
           type="primary"
@@ -49,16 +54,22 @@ export default function Home() {
         </Button>
       </div>
       <div className="mt-5 w-full">
-        {posts?.map((post: CardPostProps) => (
-          <div key={post.id} className="mb-5">
-            <CardPost
-              id={post.id}
-              user_id={post.user_id}
-              title={post.title}
-              body={post.body}
-            />
-          </div>
-        ))}
+        {isLoading
+          ? [...Array(10)].map((_, index) => (
+              <div key={index} className="mb-5">
+                <CardPostSkeleton />
+              </div>
+            ))
+          : posts?.map((post: CardPostProps) => (
+              <div key={post.id} className="mb-5">
+                <CardPost
+                  id={post.id}
+                  user_id={post.user_id}
+                  title={post.title}
+                  body={post.body}
+                />
+              </div>
+            ))}
       </div>
 
       <div className="-mt-5">
@@ -67,7 +78,10 @@ export default function Home() {
           defaultCurrent={page}
           pageSize={perPage}
           showSizeChanger={false}
-          onChange={(page) => setPage(page)}
+          onChange={(page) => {
+            setPage(page);
+            window.scrollTo({ top: 0, behavior: "smooth" });
+          }}
           total={2000}
         />
       </div>

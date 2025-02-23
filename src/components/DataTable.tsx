@@ -1,11 +1,13 @@
 import React, { useState } from "react";
-import { message, Button, Modal, Space, Table, Tag } from "antd";
+import { message, Button, Modal, Space, Table, Tag, Tooltip } from "antd";
 import type { TableProps } from "antd";
 import {
   PlusOutlined,
   EditTwoTone,
   DeleteTwoTone,
   ArrowLeftOutlined,
+  FormOutlined,
+  ContainerOutlined,
 } from "@ant-design/icons";
 import { deleteUser, getUsers } from "@/services/user";
 import { useRouter } from "next/router";
@@ -56,6 +58,7 @@ export default function DataTable() {
       title: "Name",
       dataIndex: "name",
       key: "name",
+      render: (text) => <a>{text}</a>,
     },
     {
       title: "Email",
@@ -87,13 +90,22 @@ export default function DataTable() {
       render: (_, record) => (
         <Space size="middle">
           <div className="cursor-pointer" onClick={() => handleUpdate(record)}>
-            <EditTwoTone twoToneColor="#0000FF" />
+            <Tooltip title={`See ${record.name}'s posts`}>
+              <ContainerOutlined />
+            </Tooltip>
+          </div>
+          <div className="cursor-pointer" onClick={() => handleUpdate(record)}>
+            <Tooltip title="Edit User">
+              <EditTwoTone twoToneColor="#0000FF" />
+            </Tooltip>
           </div>
           <div
             className="cursor-pointer"
             onClick={() => showDeleteModal(record)}
           >
-            <DeleteTwoTone twoToneColor="#FF0000" />
+            <Tooltip title="Delete User">
+              <DeleteTwoTone twoToneColor="#FF0000" />
+            </Tooltip>
           </div>
         </Space>
       ),
@@ -127,11 +139,11 @@ export default function DataTable() {
 
   return (
     <div className="w-full">
-      <div className="mb-4 flex gap-3">
+      <div className="mb-3 flex gap-3">
         <Button
           type="default"
           icon={<ArrowLeftOutlined />}
-          onClick={() => router.back()}
+          onClick={() => router.push("/")}
         >
           Go Back
         </Button>
@@ -141,6 +153,14 @@ export default function DataTable() {
           onClick={() => router.push("/user/adduser")}
         >
           Add New User
+        </Button>
+        <Button
+          color="default"
+          variant="solid"
+          icon={<PlusOutlined />}
+          onClick={() => router.push("/post")}
+        >
+          Create Post
         </Button>
       </div>
 
@@ -153,6 +173,7 @@ export default function DataTable() {
           pageSize: perPage,
           total: 3000,
           showSizeChanger: false,
+          position: ["bottomCenter"],
           onChange: (newPage) => setPage(newPage),
         }}
         scroll={{ x: "max-content" }}

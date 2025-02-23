@@ -23,13 +23,13 @@ export default function Page() {
   const [form] = Form.useForm();
 
   const { mutate: createUser, isPending } = addUser({
-    onSuccess: (data: any) => {
+    onSuccess: (data) => {
       message.success("Added User Successfully");
       sessionStorage.setItem("user", JSON.stringify(data));
       window.dispatchEvent(new Event("userUpdated"));
-      router.back();
+      router.push("/user");
     },
-    onError: (error: any) => {
+    onError: (error) => {
       console.error("Failed to update user:", error);
     },
   });

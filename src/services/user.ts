@@ -93,7 +93,7 @@ export const deleteUser = ({
       await axiosInstance.delete(`/public/v2/users/${id}`);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["get_users"] }); // Refresh data user yang dihapus
+      queryClient.invalidateQueries({ queryKey: ["get_users"] });
       if (onSuccess) onSuccess();
     },
     onError: (error) => {
