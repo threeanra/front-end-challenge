@@ -186,14 +186,14 @@ export default function DataTable() {
         scroll={{ x: "max-content" }}
       />
       <Modal
-        title="Hapus User"
+        title="Delete User"
         centered
         open={openModal}
         onOk={() => selectedId !== null && handleDeleteUser(selectedId)}
         onCancel={() => setOpenModal(false)}
         okButtonProps={{ danger: true }}
       >
-        <p>Are you sure you want to delete this user?</p>
+        <p>Are you sure want to delete this user?</p>
       </Modal>
     </div>
   );
