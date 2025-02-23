@@ -20,6 +20,18 @@ export const getPosts = ({
   });
 };
 
+export const getUserPosts = ({ userId }: { userId: number }) => {
+  return useQuery({
+    queryFn: async () => {
+      const response = await axiosInstance.get(
+        `/public/v2/users/${userId}/posts`
+      );
+      return response.data;
+    },
+    queryKey: ["get_posts"],
+  });
+};
+
 export const addPost = ({
   onSuccess,
   onError,

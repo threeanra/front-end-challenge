@@ -6,6 +6,7 @@ import CardPost, { CardPostProps } from "../components/CardPost";
 import { useState } from "react";
 import { getPosts } from "@/services/post";
 import CardPostSkeleton from "@/components/CardPostSkeleton";
+import Head from "next/head";
 
 export default function Home() {
   const router = useRouter();
@@ -24,16 +25,14 @@ export default function Home() {
 
   return (
     <Container>
-      <span className="font-bold text-6xl">
+      <span className="font-bold text-4xl md:text-5xl lg:text-6xl">
         Blog{" "}
         <span className="bg-gradient-to-r from-blue-500 to-purple-500 text-transparent bg-clip-text">
           Verse
         </span>
       </span>
 
-      <span>Lorem ipsum dolor sit amet</span>
-
-      <div className="flex gap-3">
+      <div className="flex gap-3 mt-2">
         <Button
           onClick={() => {
             router.push("/post");
@@ -67,6 +66,7 @@ export default function Home() {
                   user_id={post.user_id}
                   title={post.title}
                   body={post.body}
+                  showSendComment={true}
                 />
               </div>
             ))}

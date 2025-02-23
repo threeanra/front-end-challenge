@@ -2,13 +2,14 @@ import React, { useEffect, useState } from "react";
 import { Button, Card, Input, message, Tag } from "antd";
 import { MessageOutlined, SendOutlined } from "@ant-design/icons";
 import { getUserById } from "@/services/user";
-import { getComments, postComment } from "@/services/comments";
+import { getComments, postComment } from "@/services/comment";
 
 export type CardPostProps = {
   id: number;
   user_id: number;
   title: string;
   body: string;
+  showSendComment: boolean;
 };
 
 type User = {
@@ -34,7 +35,7 @@ export default function CardPost(data: CardPostProps) {
           email: data.email,
         });
       } catch (error) {
-        console.log("Error parsing session storage:", error);
+        console.log("Error parsing session storage : ", error);
       }
     }
   }, []);
@@ -63,7 +64,7 @@ export default function CardPost(data: CardPostProps) {
     onError: (error: any) => {
       console.error("Failed to add comment : ", error);
       if (error.response.status === 422) {
-        message.info("Please create user first to add comment");
+        message.info("Please create a user first to add a comment.");
       }
     },
   });
@@ -107,7 +108,7 @@ export default function CardPost(data: CardPostProps) {
     >
       <div className="flex flex-col gap-5 pb-2">
         <p className="font-medium text-xl">{data.title}</p>
-        <p className="text-lg">{data.body}</p>
+        <p className="text-md md:text-lg">{data.body}</p>
         <div className="flex items-center justify-center gap-2">
           <MessageOutlined
             className="
@@ -129,23 +130,25 @@ export default function CardPost(data: CardPostProps) {
               </div>
             ))
         ) : (
-          <p className="text-center font-light text-sm">No comments yet</p>
+          <p className="text-center font-light text-sm">No comment yet</p>
         )}
 
-        <div className="flex gap-2 mt-3">
-          <Input
-            placeholder="Add comment..."
-            value={comment}
-            onChange={(e) => setComment(e.target.value)}
-          />
-          <Button
-            type="primary"
-            icon={<SendOutlined />}
-            onClick={handleAddComment}
-            disabled={!comment.trim() || loadingPostComment}
-            loading={loadingPostComment}
-          />
-        </div>
+        {data.showSendComment && (
+          <div className="flex gap-2 mt-3">
+            <Input
+              placeholder="Add comment..."
+              value={comment}
+              onChange={(e) => setComment(e.target.value)}
+            />
+            <Button
+              type="primary"
+              icon={<SendOutlined />}
+              onClick={handleAddComment}
+              disabled={!comment.trim() || loadingPostComment}
+              loading={loadingPostComment}
+            />
+          </div>
+        )}
       </div>
     </Card>
   );

@@ -89,7 +89,10 @@ export default function DataTable() {
       key: "action",
       render: (_, record) => (
         <Space size="middle">
-          <div className="cursor-pointer" onClick={() => handleUpdate(record)}>
+          <div
+            className="cursor-pointer"
+            onClick={() => handleShowPosts(record)}
+          >
             <Tooltip title={`See ${record.name}'s posts`}>
               <ContainerOutlined />
             </Tooltip>
@@ -111,6 +114,10 @@ export default function DataTable() {
       ),
     },
   ];
+
+  const handleShowPosts = (record: any) => {
+    router.push(`/post/${record.id}/${record.name}`);
+  };
 
   const handleUpdate = (record: any) => {
     router.push(`/user/${record.id}`);
