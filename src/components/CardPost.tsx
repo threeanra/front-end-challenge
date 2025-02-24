@@ -89,10 +89,14 @@ export default function CardPost(data: CardPostProps) {
   return (
     <Card
       title={
-        <div className="font-bold flex gap-2">
+        <div className="font-bold flex gap-2 overflow-hidden">
           Author :{" "}
           <span
-            className={user?.name ? "font-normal" : "font-normal text-red-500"}
+            className={
+              user?.name
+                ? "font-normal truncate"
+                : "font-normal text-red-500 truncate"
+            }
           >
             {user?.name ?? "User not found"}
           </span>

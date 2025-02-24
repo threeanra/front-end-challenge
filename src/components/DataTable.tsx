@@ -151,6 +151,7 @@ export default function DataTable() {
           type="default"
           icon={<ArrowLeftOutlined />}
           onClick={() => router.push("/")}
+          className="hidden md:flex"
         >
           Go Back
         </Button>
