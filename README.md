@@ -27,7 +27,7 @@ npm run dev
 - CRUD User Account
 - Fetch API with pagination
 - Pagination
-- Comment Feature
+- Create Post & Comment Feature
 - Detail Post every user
 - Save User to Session Storage
 
