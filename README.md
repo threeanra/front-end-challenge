@@ -12,7 +12,7 @@ Blog app that make you understand how to use Next.js with pages router and Tanst
 npm install
 ```
 - After that, rename .env.example to .env
-- Replace BEARER_TOKEN to your API Key
+- Replace YOUR_BEARER_TOKEN to your API Key
 ```bash 
 NEXT_PUBLIC_API_URL ="https://gorest.co.in"
 NEXT_PUBLIC_BEARER_TOKEN =YOUR_BEARER_TOKEN
@@ -38,3 +38,9 @@ npm run dev
 - Tanstack Query v5
 - Ant Design v5.24.3
 - Node.js v20
+
+## API Usage
+You can read the documentation of the API [here](https://gorest.co.in/)
+
+## Live Preview
+[Live Preview](https://blog-verse-fe.vercel.app)
